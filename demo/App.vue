@@ -1,6 +1,6 @@
 <template>
   hello TuttiFanUI!
-  <TuttiFanButton>默认按钮</TuttiFanButton>
+  <TuttiFanButton type="success" size="small" round>提交</TuttiFanButton>
 </template>
 
 <script setup>

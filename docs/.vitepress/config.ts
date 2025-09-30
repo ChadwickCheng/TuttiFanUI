@@ -17,7 +17,7 @@ export default defineConfig({
           {
             text: '基础组件',
             items: [
-              { text: 'TuttiFanButton', link: '/components/TuttiFanButton' },
+              { text: 'Button-按钮', link: '/components/TuttiFanButton' },
             ]
           }
         ]
