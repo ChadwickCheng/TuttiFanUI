@@ -1,45 +1,80 @@
 <template>
   <button
-    :class="['tutti-btn', customClass]"
-    :style="[tuttiStyle, customStyle]"
-    @click="onClick"
+    :class="btnClass"
+    :disabled="disabled || loading"
+    :autofocus="autofocus"
+    :type="nativeType"
+    @click="handleClick"
   >
-    <slot>默认按钮</slot>
+    <span v-if="loading" class="tutti-btn__loading">加载中...</span>
+    <slot v-else />
   </button>
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue';
+import { computed, defineProps, defineEmits } from 'vue'
 
 const props = defineProps({
-  customClass: String,      // 用户自定义类名
-  customStyle: Object,      // 用户自定义样式
-  type: { type: String, default: 'primary' }, // 按钮类型
-});
+  size: { type: String, default: 'medium' }, // medium / small / mini
+  type: { type: String, default: 'primary' }, // primary / success / warning / danger / info / text
+  plain: { type: Boolean, default: false },
+  round: { type: Boolean, default: false },
+  circle: { type: Boolean, default: false },
+  loading: { type: Boolean, default: false },
+  disabled: { type: Boolean, default: false },
+  autofocus: { type: Boolean, default: false },
+  nativeType: {
+    type: String as () => 'button' | 'submit' | 'reset',
+    default: 'button'
+  }, // button / submit / reset
+})
 
-const emits = defineEmits(['click']);
+const emits = defineEmits(['click'])
 
-const tuttiStyle = {
-  background: props.type === 'primary' ? '#ff6f61' : '#fff',
-  color: props.type === 'primary' ? '#fff' : '#ff6f61',
-  borderRadius: '8px',
-  padding: '8px 20px',
-  border: '1px solid #ff6f61',
-  boxShadow: '0 2px 8px rgba(255,111,97,0.15)',
-  cursor: 'pointer',
-  fontWeight: 'bold',
-};
+const btnClass = computed(() => [
+  'tutti-btn',
+  `tutti-btn--${props.type}`,
+  `tutti-btn--${props.size}`,
+  { 'is-plain': props.plain },
+  { 'is-round': props.round },
+  { 'is-circle': props.circle },
+  { 'is-loading': props.loading },
+  { 'is-disabled': props.disabled },
+])
 
-function onClick(e: MouseEvent) {
-  emits('click', e);
+function handleClick(e: MouseEvent) {
+  if (!props.loading && !props.disabled) {
+    emits('click', e)
+  }
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .tutti-btn {
-  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  padding: 0 20px;
+  height: 36px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: 0.2s;
+  background: #ff6f61;
+  color: #fff;
 }
-.tutti-btn:hover {
-  opacity: 0.85;
-}
+.tutti-btn--small { height: 32px; font-size: 13px; }
+.tutti-btn--mini { height: 28px; font-size: 12px; }
+.tutti-btn--success { background: #67c23a; }
+.tutti-btn--warning { background: #e6a23c; }
+.tutti-btn--danger { background: #f56c6c; }
+.tutti-btn--info { background: #909399; }
+.tutti-btn--text { background: none; color: #ff6f61; }
+.is-plain { background: #fff; color: #ff6f61; border: 1px solid #ff6f61; }
+.is-round { border-radius: 20px; }
+.is-circle { border-radius: 50%; padding: 0; width: 36px; height: 36px; }
+.is-loading { opacity: 0.7; cursor: not-allowed; }
+.is-disabled { opacity: 0.5; cursor: not-allowed; }
+.tutti-btn__loading { margin-right: 6px; }
 </style>
